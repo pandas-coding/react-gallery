@@ -23,7 +23,7 @@ function App() {
   }
   //</editor-fold>
 
-  const [person, setPerson] = useState({
+  const [person, setPerson] = useState<ObjectState>({
     name: '张三',
     age: 25,
     nest: {
@@ -31,6 +31,7 @@ function App() {
     },
   })
   const handleRemoveAge = () => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {age, ...newPerson} = person
     setPerson(newPerson)
   }
@@ -58,7 +59,7 @@ function App() {
       <ul>
         {Object.keys(person).map((key, index) => (
           <li key={index}>
-            {key}: {person[key].toString()}
+            {key}: {person[key as keyof ObjectState]!.toString()}
           </li>
         ))}
       </ul>
@@ -69,3 +70,11 @@ function App() {
 }
 
 export default App
+
+interface ObjectState {
+  name?: string,
+  age?: number,
+  nest?: {
+    a: 1,
+  },
+}
