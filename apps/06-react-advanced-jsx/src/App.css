@@ -1,0 +1,23 @@
+.container {
+    width: 100%;
+    margin: 0 auto;
+    padding-top: 24px;
+    display: grid;
+    place-content: center;
+    height: 100vh;
+    background: #152754;
+    color: white;
+}
+
+p {
+    color: white;
+    font-size: 48px;
+}
+
+span {
+    font-size: 24px;
+}
+
+hr {
+    margin: 12px 0;
+}
