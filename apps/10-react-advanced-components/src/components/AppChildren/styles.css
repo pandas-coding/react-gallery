@@ -1,0 +1,14 @@
+.container {
+    margin: 0 auto;
+    display: grid;
+    place-content: center;
+    gap: 12px;
+    height: 100vh;
+    background-color: hsl(220, 33%, 15%);
+}
+
+.container > div {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
