@@ -9,6 +9,8 @@ function App() {
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
+  const [err, setErr] = useState<{message: string} | null>(null)
+
   async function getNotes(params?: string) {
     setLoading(true)
 
@@ -17,6 +19,11 @@ function App() {
       url += `?${new URLSearchParams({ term: params })}`
     }
     const res = await fetch(url)
+    if (res.status > 400) {
+      setErr(await res.json())
+      setLoading(false)
+      return
+    }
     const data = await res.json()
     setNotes(data)
     setLoading(false)
@@ -50,6 +57,7 @@ function App() {
         <h1>我的笔记本</h1>
         <SearchNote searchTerm={searchTerm} onChange={handleSearch}/>
         {loading ? <div>loading...</div> : <NoteList notes={notes}/>}
+        {err && (<div style={{ color: "hsl(10deg, 100%, 70%)" }}>{err.message}</div>)}
         <AddNote onSubmit={handleAdd}/>
       </div>
     </main>
