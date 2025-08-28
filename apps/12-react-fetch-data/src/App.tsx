@@ -35,7 +35,8 @@ function App() {
     const res = await fetch('http://localhost:8080/notes', {
       method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer SOMEJWTTOKEN',
       },
       body: JSON.stringify(note),
     })
