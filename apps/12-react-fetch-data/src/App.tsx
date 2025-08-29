@@ -11,14 +11,16 @@ function App() {
 
   const [err, setErr] = useState<{message: string} | null>(null)
 
-  async function getNotes(params?: string) {
+  async function getNotes(params?: string, controller?: AbortController) {
     setLoading(true)
 
     let url = '/api/notes'
     if (params) {
       url += `?${new URLSearchParams({ term: params })}`
     }
-    const res = await fetch(url)
+    const res = await fetch(url, {
+      signal: controller?.signal
+    })
     if (res.status > 400) {
       setErr(await res.json())
       setLoading(false)
@@ -30,12 +32,18 @@ function App() {
   }
 
   useEffect(() => {
-    getNotes()
+    const controller = new AbortController()
+    getNotes(undefined, controller).then(r => r)
+
+    // added abort controll every time useEffect runs to avoid page bounce.
+    return () => {
+      controller.abort('fetch rerunned')
+    }
   }, [])
 
   const handleSearch = (event: ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value)
-    getNotes(event.target.value)
+    getNotes(event.target.value).then(r => r)
   }
 
   const handleAdd = async (note: Note) => {
