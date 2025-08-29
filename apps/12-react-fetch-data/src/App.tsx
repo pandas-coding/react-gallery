@@ -3,7 +3,8 @@ import './App.css'
 import AddNote from './components/AddNote'
 import NoteList, { type Note } from './components/NoteList'
 import SearchNote from './components/SearchNote'
-import { request, type RequestError } from './utils/request.ts'
+import { request, } from './utils/request.ts'
+import getAxios from './utils/getAxios.ts'
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([])
@@ -12,8 +13,7 @@ function App() {
 
   const [err, setErr] = useState<{message: string} | undefined>(undefined)
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async function getNotes(params?: string, _controller?: AbortController) {
+  async function getNotes(params?: string, controller?: AbortController) {
     setLoading(true)
 
     let url = '/api/notes'
@@ -22,10 +22,18 @@ function App() {
     }
 
     try {
-      const data = await request(url);
-      setNotes(data);
-    } catch (e: unknown) {
-      setErr((e as RequestError)!.error);
+      const res = await getAxios().get(url, {
+        signal: controller?.signal,
+      });
+      setNotes(res.data);
+    } catch (e) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-expect-error
+      if (e.response?.data) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-expect-error
+        setErr(e.response?.data);
+      }
     } finally {
       setLoading(false);
     }
