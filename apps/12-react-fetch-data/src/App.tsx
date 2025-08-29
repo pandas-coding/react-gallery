@@ -3,32 +3,32 @@ import './App.css'
 import AddNote from './components/AddNote'
 import NoteList, { type Note } from './components/NoteList'
 import SearchNote from './components/SearchNote'
+import { request, type RequestError } from './utils/request.ts'
 
 function App() {
   const [notes, setNotes] = useState<Note[]>([])
   const [loading, setLoading] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
 
-  const [err, setErr] = useState<{message: string} | null>(null)
+  const [err, setErr] = useState<{message: string} | undefined>(undefined)
 
-  async function getNotes(params?: string, controller?: AbortController) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async function getNotes(params?: string, _controller?: AbortController) {
     setLoading(true)
 
     let url = '/api/notes'
     if (params) {
       url += `?${new URLSearchParams({ term: params })}`
     }
-    const res = await fetch(url, {
-      signal: controller?.signal
-    })
-    if (res.status > 400) {
-      setErr(await res.json())
-      setLoading(false)
-      return
+
+    try {
+      const data = await request(url);
+      setNotes(data);
+    } catch (e: unknown) {
+      setErr((e as RequestError)!.error);
+    } finally {
+      setLoading(false);
     }
-    const data = await res.json()
-    setNotes(data)
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -47,16 +47,8 @@ function App() {
   }
 
   const handleAdd = async (note: Note) => {
-    const res = await fetch('/api/notes', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Bearer SOMEJWTTOKEN',
-      },
-      body: JSON.stringify(note),
-    })
-    const data = await res.json()
-    setNotes([...notes, data])
+    const data = await request("/api/notes", "POST", note);
+    setNotes([...notes, data]);
   }
 
   return (
