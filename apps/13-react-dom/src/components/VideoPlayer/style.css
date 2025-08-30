@@ -1,0 +1,12 @@
+.videoPlayer {
+    display: grid;
+    justify-items: start;
+    gap: 24px;
+}
+
+.videoPlayer button {
+    background: none;
+    width: initial;
+    height: initial;
+    padding: 0;
+}
